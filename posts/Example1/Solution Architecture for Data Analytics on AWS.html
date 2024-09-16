@@ -1,0 +1,688 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Solution Architecture for Data Analytics on AWS  </title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-default_background {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 237, 214, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 237, 214, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(0, 0, 0, 0.06); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(249, 228, 188, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="c785f543-2fdf-4c3b-83bd-499d08ccb602" class="page sans"><header><img class="page-cover-image" src="https://www.notion.so/images/page-cover/nasa_robert_stewart_spacewalk.jpg" style="object-position:center 40%"/><h1 class="page-title">Solution Architecture for Data Analytics on AWS  </h1><p class="page-description"></p></header><div class="page-body"><ol type="1" id="6a613b57-9b9c-4b13-a954-648f1a966235" class="numbered-list" start="1"><li><a href="https://www.notion.so/Solution-Architecture-for-Data-Analytics-on-AWS-c785f5432fdf4c3b83bd499d08ccb602?pvs=21">Introduction</a></li></ol><ol type="1" id="bbf3dae6-25b8-4085-a487-8a8dd22dd263" class="numbered-list" start="2"><li><a href="https://www.notion.so/Solution-Architecture-for-Data-Analytics-on-AWS-c785f5432fdf4c3b83bd499d08ccb602?pvs=21">Communication with the Customer</a></li></ol><ol type="1" id="7886b39d-a784-417c-b1e8-0c4f61069bcc" class="numbered-list" start="3"><li><a href="https://www.notion.so/Solution-Architecture-for-Data-Analytics-on-AWS-c785f5432fdf4c3b83bd499d08ccb602?pvs=21">Architecture Solutions Designing</a></li></ol><ol type="1" id="27f0f514-cce7-4c6e-92be-d28c600982fc" class="numbered-list" start="4"><li><a href="https://www.notion.so/Solution-Architecture-for-Data-Analytics-on-AWS-c785f5432fdf4c3b83bd499d08ccb602?pvs=21">Optimization and Scalability</a></li></ol><ol type="1" id="7aa5425e-35d1-4a32-a058-248d1104513c" class="numbered-list" start="5"><li><a href="https://www.notion.so/Solution-Architecture-for-Data-Analytics-on-AWS-c785f5432fdf4c3b83bd499d08ccb602?pvs=21">Conclusion</a></li></ol><h2 id="fef90c82-ff83-4022-9f68-9c5c6fb4ca65" class="">1. Introduction</h2><p id="2c6ceaaa-8715-44bb-bd3d-2043837f0ee7" class="">Legacy analytics platforms struggle with fast-growing datasets, restricting companies from unlocking the full potential of their data. This post explores how to build a modern, scalable analytics architecture on AWS leveraging services like S3, Athena, Amazon Kinesis Data Firehose, Amazon Athena, and Amazon QuickSight. We&#x27;ll discuss an example of a software company that needs a data analytics solution in AWS so that it can derive insights from clickstream data.</p><h2 id="8c2e6702-ffa9-44ff-a374-74bf1552cef3" class="">2. Communication with the Customer</h2><p id="5c7f1993-4fbb-439d-87b3-78691b595f8a" class="">Effective architecture design requires clear communication with customers to grasp their specific situations, needs, and goals. We must also understand the precise scenario and requirements for the solution. With complete knowledge of the customer&#x27;s context and desired outcomes, we can tailor the architecture to address their unique challenges and objectives. Ongoing dialogue enables us to create optimal solutions aligned with the customer&#x27;s circumstances and specifications, delivering maximum impact.</p><p id="40f8f976-8afe-4d78-83f7-7859bdbd30a2" class="">Through discussions with the customer, we gathered the following information about their needs and requirements:</p><h3 id="f15cb774-c2b1-4cfa-981f-b4aeed58036c" class="">Customer’s information</h3><ul id="1faddb9d-df6f-40f8-91a0-b95bae9db784" class="bulleted-list"><li style="list-style-type:disc">Industry: Software/Technology</li></ul><ul id="5ae12e01-3579-4f3e-8915-691ff40ea8b9" class="bulleted-list"><li style="list-style-type:disc">Product: QR code solution for restaurant menus</li></ul><ul id="a3e32d1b-bb59-4af5-9d49-95a80bdbfd95" class="bulleted-list"><li style="list-style-type:disc">Expertise: Strong coding skills</li></ul><ul id="5faae4f3-6b94-4dbc-81dc-04e45e66ca49" class="bulleted-list"><li style="list-style-type:disc">Need: Requires to help architecting a data analytics infrastructure</li></ul><ul id="1617d653-c40f-44b9-b756-9846552ed49c" class="bulleted-list"><li style="list-style-type:disc">Goals: Augment their QR code product with analytics capabilities like data ingestion, processing, and visualization</li></ul><ul id="d4ce4888-b7b2-4ba2-a919-9ff5eef8de03" class="bulleted-list"><li style="list-style-type:disc">Motivation: Adding analytics features will make their overall product more competitive</li></ul><h3 id="2bca6cdc-0e72-404e-9e34-db07da919302" class="">Requirements</h3><ul id="c2c1c597-4c52-4ee3-b20e-318e057dcd2a" class="bulleted-list"><li style="list-style-type:disc">Ingest clickstream data sent from QR code pageviews</li></ul><ul id="22acaede-f48d-4551-add3-d96b941092d0" class="bulleted-list"><li style="list-style-type:disc">Store data securely with encryption at rest and in transit</li></ul><ul id="44afc41a-18e9-4810-854d-d30e8372414b" class="bulleted-list"><li style="list-style-type:disc">Make data available in a second region for backup</li></ul><ul id="651d03bb-5f2a-4030-8a85-ed734d468ecb" class="bulleted-list"><li style="list-style-type:disc">Leverage serverless, managed services to minimize maintenance</li></ul><ul id="44d47e9c-e0a2-4bef-94f3-ca4a4de5efc0" class="bulleted-list"><li style="list-style-type:disc">Pay only for usage, not uptime</li></ul><ul id="702adb66-c644-4d04-b2d0-a8a88426dd6e" class="bulleted-list"><li style="list-style-type:disc">Provide a REST API endpoint to ingest data</li></ul><ul id="9c7b8a52-76c6-41ba-8b19-54e8f74c0cbb" class="bulleted-list"><li style="list-style-type:disc">Enable data analytics on menu clickstream data</li></ul><ul id="a6cb1c49-178f-4f7a-bdd5-bfaa192d5305" class="bulleted-list"><li style="list-style-type:disc">Help restaurants optimize menus based on usage analytics</li></ul><h3 id="c07797b3-9e16-49a0-b8d0-5229f0452598" class="">Scenario</h3><ul id="232a2b99-079f-4ff4-be21-dfcf492225c0" class="bulleted-list"><li style="list-style-type:disc">A software company provides QR code restaurant menus hosted in S3</li></ul><ul id="8f35d116-0aa2-4c3f-ab26-5cfd3d9d6f96" class="bulleted-list"><li style="list-style-type:disc">They want to upgrade the product by adding a data analytics platform</li></ul><h3 id="d0049112-9990-4679-b474-0fca92ab06e3" class="">Initial Architecture</h3><p id="a6807b6b-e48c-4c14-8d1f-74a35a5868f5" class="">After consulting with the customer to understand their requirements, we devised an initial architecture consisting of:</p><p id="41097fbd-4521-4049-8797-a2bc552fe9ad" class=""><strong>In scope:</strong></p><figure id="624330d3-bad5-42f2-a8ee-17b457999838" class="image"><a href="Untitled.png"><img style="width:708px" src="Untitled.png"/></a></figure><p id="862e5841-1a44-4aad-a235-ab9ecd948e47" class="">
+</p><p id="42417960-e47c-40fb-82aa-bc2ad8b6d07d" class=""><strong>Out of Scope: </strong></p><ul id="a1beb17f-2ee9-46e1-8d98-36432473aa32" class="bulleted-list"><li style="list-style-type:disc">The payment part</li></ul><ul id="bcc64b61-0adf-41da-ab7e-e9c331332083" class="bulleted-list"><li style="list-style-type:disc">The clickstream code will collect information on the client side</li></ul><h2 id="c862a362-ef95-4d52-9a7c-354f401ebdfc" class="">3. Architecture Solutions Designing</h2><p id="a76f8a60-6b66-40c9-8096-ed72829c742a" class="">
+</p><p id="47b5bd84-32d5-449a-8c28-b8ca49a984e1" class="">When designing architecture solutions, it is crucial to use the right tools to address the customer&#x27;s specific requirements and needs. The job at hand is satisfying what the customer asks for in their scenario.</p><p id="ccdc1ec0-444e-4a36-9e49-356c725f3c76" class="">Throughout the design process, communicating with the customer is very important, as requirements often need further clarification or the customer&#x27;s situation requires additional investigation. Open dialogue allows for collaboratively ensuring the architecture meets the customer&#x27;s evolving needs and technical objectives.</p><h3 id="5e3e2507-8b23-4f61-b8cd-92b9caba643a" class="">Data Ingestion</h3><ol type="1" id="510a40a0-0812-486d-aa27-fca0601813db" class="numbered-list" start="1"><li>Customer’s situation:</li></ol><p id="11d5c98b-eb97-4b13-9af0-432204e6ed8d" class="">The customer primarily needed a way to ingest large volumes of clickstream data that would scale, without having to change their existing JavaScript library. They wanted to avoid the overhead of managing underlying resources, with costs aligned to usage.</p><p id="c29b2e85-8677-4351-b2c3-8f16b0d628dd" class="">To address this, we integrated <strong>API Gateway</strong>. This allowed us to seamlessly bring in the customer&#x27;s current codebase while providing a sturdy, secure HTTPS data ingestion mechanism into the new architecture.</p><p id="405d7db7-ee07-4c54-9331-4ffa9f1a3d9a" class="">Customers require scalable data ingestion for clickstream data without having to modify their current JavaScript library or manage resources while keeping costs proportional to usage.</p><ol type="1" id="940595f5-2e9f-4f1b-a552-25dc85116fc5" class="numbered-list" start="2"><li>Different data ingestion tools features:</li></ol><ul id="fd292ed4-c57d-4282-aea5-c7960cd44f7f" class="bulleted-list"><li style="list-style-type:disc">EMR: Managed Hadoop clusters for big data streaming with Spark</li></ul><ul id="2edada12-2766-4ba5-83e6-11fff724d14a" class="bulleted-list"><li style="list-style-type:disc">DMS: Migrates databases to the cloud</li></ul><ul id="5fe9be59-8ec3-4d9c-b441-0b406031f3f5" class="bulleted-list"><li style="list-style-type:disc">Data Exchange: Provides data catalogs and third-party data integration</li></ul><ul id="39999ebb-273c-4da7-8365-69728e76a134" class="bulleted-list"><li style="list-style-type:disc">Kinesis Data Analytics: Real-time data processing during ingestion</li></ul><ul id="a080e067-eb27-4577-a7e5-a5647d53d486" class="bulleted-list"><li style="list-style-type:disc">Kinesis Data Streams: Lower latency but needs custom coding</li></ul><ul id="28ca97fc-de70-4288-98f5-9e9c45228afa" class="bulleted-list"><li style="list-style-type:disc">Kinesis Firehose: More convenient with buffering, no custom coding</li></ul><ol type="1" id="86433fb5-297e-4eb3-8fad-03e686688b40" class="numbered-list" start="3"><li>Kinesis Firehose was chosen because:</li></ol><p id="8199cd21-a0e1-4e32-a8fe-92576a042a81" class="">Kinesis Firehose’s convenience as a managed service, meeting the customer&#x27;s needs of asynchronous analytics without low latency requirements or custom coding.</p><h3 id="0e3ef4b9-a87a-4dbc-8bb6-74448c9ce111" class="">Data Storage</h3><ol type="1" id="3b80c575-549f-40b0-aa98-72b6bce86773" class="numbered-list" start="1"><li>Customer’s situation:</li></ol><p id="4fe122e2-8390-4d97-a2ff-f991bffc4ed9" class="">The customer requires a storage solution for growing volumes of analytics data that is durable,     encrypted, replicated, cost-efficient, serverless, and flexible for use with different processing tools. S3 meets all these needs for a scalable, resilient data lake to power their analytics application.</p><ol type="1" id="37ee705d-61d4-4acb-a25d-426e296de548" class="numbered-list" start="2"><li>Different storage tools features:</li></ol><ul id="40a8fd0c-259f-404a-9345-67e2cd9d651f" class="bulleted-list"><li style="list-style-type:disc">EBS: Block storage, high performance, attaches to EC2 instances</li></ul><ul id="63b30613-8e1d-4f8d-bfdd-be5440638dd9" class="bulleted-list"><li style="list-style-type:disc">EFS: File storage, higher durability, attaches to EC2, containers</li></ul><ul id="66580b39-8425-4a1c-adf3-18f4d87bc90a" class="bulleted-list"><li style="list-style-type:disc">S3: Object storage, highest durability, standalone service</li></ul><ol type="1" id="7ae7ec55-5f08-4b7d-a17f-87f2be86bc3c" class="numbered-list" start="3"><li>Choose S3 was chosen because:</li></ol><p id="ebbb7d5a-4d72-4e18-814e-6473bd5e93c5" class="">S3 was chosen over EBS and EFS because of its standalone storage capabilities, granular usage pricing, and ability to meet all the durability, encryption, replication, and cost requirements.</p><h3 id="ad5f51b7-71ce-44a9-99af-575b3594471b" class="">Data Processing and Analysis</h3><ol type="1" id="37e40e77-9bb7-442f-bc0d-784d0130d7d8" class="numbered-list" start="1"><li>Customer’s situation:</li></ol><p id="b4ccef90-ddc9-4e9f-b2ee-e8cdb9990546" class="">The customer has clickstream data files in S3 in JSON format that need to be analyzed with SQL. They want a serverless service with pay-per-query pricing and without the overhead of managing servers or clusters. </p><ol type="1" id="5f5a6e32-5a26-4cd2-b9c6-025aa0744bab" class="numbered-list" start="2"><li>Different data processing tools features:</li></ol><ul id="b1758360-2e67-4bdd-b5d0-2950f55f832a" class="bulleted-list"><li style="list-style-type:disc">S3 Select: SQL queries on individual S3 objects</li></ul><ul id="95ded92b-5d3c-410c-b775-5cc066403a64" class="bulleted-list"><li style="list-style-type:disc">Glue: Managed ETL jobs, good for unstructured data</li></ul><ul id="f22869b7-ddf3-4c1c-9eaf-2ab7ac1abdb8" class="bulleted-list"><li style="list-style-type:disc">EMR: Managed Hadoop framework for big data processing</li></ul><ul id="988df501-8b51-49c1-846f-9bd908e9720c" class="bulleted-list"><li style="list-style-type:disc">Athena: Interactive SQL queries across S3 data, serverless</li></ul><ol type="1" id="e80256b6-a6f6-4c36-a7d5-7c56784adef0" class="numbered-list" start="3"><li>Athena was chosen because:</li></ol><p id="cccd0813-e51f-4d2e-9c0b-443562d3c02f" class="">Athena serverless, pay-per-query model that can directly query formats like JSON in S3 with standard SQL, avoiding complexity and matching the customer needs. Athena meets these requirements for convenience, simplicity, and an aligned cost model.</p><h3 id="b0daf135-869c-4995-9433-3e71e5121ca1" class="">Data Visualization</h3><ol type="1" id="6bcf37e0-96d0-4f1f-a538-275d81842929" class="numbered-list" start="1"><li>Customer’s situation:</li></ol><p id="4d701a85-2e39-4e2c-a140-46a939f0c85a" class="">The customer requires data visualization to surface insights, create interactive dashboards for their clients, and communicate data findings visually. This complements the underlying SQL queries and enables deeper business analytics. The customer uses QuickSight in their BI team.</p><ol type="1" id="49b4cf79-5012-44c0-a3a4-4c25e938268f" class="numbered-list" start="2"><li>Different data visualization tools features:</li></ol><ul id="92c6c2ac-d9e2-4657-84c4-186322dd80f2" class="bulleted-list"><li style="list-style-type:disc">CloudWatch: Metrics and dashboards for monitoring AWS resources</li></ul><ul id="9d395c62-f524-4d1b-b8c2-125dda051ef9" class="bulleted-list"><li style="list-style-type:disc">OpenSearch: Managed Elasticsearch service with embedded storage/compute</li></ul><ul id="21ed0164-5dcd-4093-9829-86dfdc3fabd3" class="bulleted-list"><li style="list-style-type:disc">Grafana: Open source platform for visualizing time series metrics</li></ul><ul id="295e0b2d-5817-41b0-904d-f13230c5ddf4" class="bulleted-list"><li style="list-style-type:disc">QuickSight: Serverless BI tool with pay-per-use pricing</li></ul><ol type="1" id="e1b79cf9-6d03-4d6e-b249-8fba4c0ebba0" class="numbered-list" start="3"><li>QuickSight was chosen because:</li></ol><p id="e3cd0167-afff-4bb6-bb9b-234dffa05019" class="">QuickSight was suitable for the task and the customer already uses it for other projects, so adopting it for this architecture requires less effort and training. Its serverless model and Athena integration also align with the goals of this analytics solution.</p><h3 id="1ec8cce7-593f-4608-a40c-05d42d3e7508" class="">Proposed Architecture</h3><p id="b5ce3462-f0b8-4faa-b681-133d1c871690" class="">Leveraging API Gateway&#x27;s integration capabilities and security features, we can provide a robust HTTPS endpoint that seamlessly ingests the customer&#x27;s existing code payload while securely proxying the requests to Kinesis Firehose – all without requiring front-end code modifications.</p><ul id="3c63b355-4b1c-435f-ac76-ca4ea3727784" class="bulleted-list"><li style="list-style-type:disc">API Gateway - ingest data from HTTPS requests</li></ul><ul id="5d4b7dcd-63bc-4840-a352-6c2cf5cab7a9" class="bulleted-list"><li style="list-style-type:disc">Kinesis Firehose - scalable ingestion to S3</li></ul><ul id="9e49ea78-6169-4687-9fcc-fbc535d3f06b" class="bulleted-list"><li style="list-style-type:disc">S3 - durable object storage</li></ul><ul id="251d13b0-4c09-4bfa-8ce9-c6ddd1e63d1a" class="bulleted-list"><li style="list-style-type:disc">Athena - serverless SQL queries on S3 data</li></ul><ul id="90299621-5599-46f2-b654-02820a9cfffe" class="bulleted-list"><li style="list-style-type:disc">QuickSight - visualize query results and insights</li></ul><h3 id="1985121a-6109-41f6-a16b-588bd17cd535" class="">Architecture Solution Overview</h3><figure id="802fbe9e-ea19-415b-9cb8-b50c9ef52de2" class="image"><a href="Untitled%201.png"><img style="width:768px" src="Untitled%201.png"/></a></figure><h3 id="3df25a2b-f0f6-47fb-b752-b3e33daa2d30" class="">Proof of Concept</h3><p id="fcb253fd-b7b1-464b-ae67-f8acca31002b" class="">To validate the effectiveness of this data analytics architecture, the next recommended step would be collaborating with the customer to build a time-boxed proof of concept implementing the key components of the solution.</p><h2 id="2ba4490d-7608-46ad-a20f-630a72902c9d" class="">4. Optimization and Scalability</h2><ul id="eedafb1e-b9aa-4ad4-8a59-ac652d5c8014" class="bulleted-list"><li style="list-style-type:disc">Use a serverless architecture instead of EC2 which the customer currently leverages for their menu update system</li></ul><ul id="e05f29ca-2e10-4155-ba2e-63c5430969bf" class="bulleted-list"><li style="list-style-type:disc">Use CloudFront CDN in front of S3 web hosting to cache content and reduce requests/costs</li></ul><ul id="b33ca097-5005-4140-a9fc-63555e5d2a28" class="bulleted-list"><li style="list-style-type:disc">Replace API Gateway with Amazon Cognito for authentication. Remove API Gateway to reduce costs. Update JavaScript code to integrate Cognito</li></ul><ul id="93d7e097-d613-474c-a481-b30bfb340746" class="bulleted-list"><li style="list-style-type:disc">Create a CloudFormation template of the architecture to reproduce it in other accounts. Helps with governance, and billing separation</li></ul><ul id="eaaa888e-0d79-4615-bc74-7b95d762b946" class="bulleted-list"><li style="list-style-type:disc">Add retry logic and exponential backoff to the JavaScript library for better resilience. Leverage built-in retries in AWS SDK</li></ul><ul id="400f3e23-0870-40d4-ab31-6589522ca84a" class="bulleted-list"><li style="list-style-type:disc">Optimize S3 data layout for Athena with partitioning and columnar formats like Parquet. Improves query performance</li></ul><p id="002f8204-5cf2-4b83-b898-1395770489b6" class="">In summary, the key optimization tips covered transitioning to serverless, using CloudFront for caching, replacing API Gateway with Cognito, CloudFormation infrastructure as code, resilient JavaScript clients, and tuning S3 for fast Athena queries.</p><h2 id="1a7c2e32-58f3-4a68-b89f-e603bc44a9b1" class="">5. Conclusion</h2><p id="bf28ee2e-317c-4724-bb91-e3e089112e1b" class="">This project exemplified the agility and innovation unlocked by thoughtfully applying cloud technologies to meet business needs.</p><p id="ad7ea3fb-9d72-4144-b790-d4a5a5b3bcd4" class="">
+</p><p id="0b65b9a6-d0c1-45e9-a527-38c689d2830d" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
